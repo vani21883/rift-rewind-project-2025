@@ -1,5 +1,5 @@
 // Contact form handler - Sends form data to AWS Lambda
-const LAMBDA_URL = 'YOUR_LAMBDA_FUNCTION_URL_HERE'; // Replace with your Function URL
+const LAMBDA_URL = 'https://vya4g4hw76nlodxeacr347z55a0jxmuh.lambda-url.eu-north-1.on.aws'; // Replace with your Function URL
 
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.contact-form-container');
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const messageDiv = document.getElementById('form-message');
 
         // Show loading state
+
         submitBtn.textContent = 'Sending...';
         submitBtn.disabled = true;
         messageDiv.style.display = 'none';
