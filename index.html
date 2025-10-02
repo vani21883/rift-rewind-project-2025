@@ -46,14 +46,12 @@
                 target="_blank" class="cta-button">View Challenge Details</a>
         </section>
 
-        <!-- CONTACT FORM SECTION - Added for user contact functionality -->
+        <!-- CONTACT FORM SECTION -->
         <section class="contact-form">
             <h3>Get In Touch</h3>
             <p>Have a question or want to connect? Send me a message!</p>
-            <!-- Form message container for success/error messages -->
             <div id="form-message" class="form-message" style="display: none;"></div>
             <form class="contact-form-container">
-                <!-- Contact form input fields -->
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" id="name" name="name" required>
@@ -66,22 +64,17 @@
                     <label for="message">Message</label>
                     <textarea id="message" name="message" rows="5" required></textarea>
                 </div>
-                <!-- Contact form submit button -->
                 <button type="submit" class="contact-submit-btn">Send Message</button>
             </form>
         </section>
-        <!-- END CONTACT FORM SECTION -->
 
         <!-- LEAGUE DATA LOOKUP SECTION -->
         <section class="league-lookup">
             <h3>League Data Lookup</h3>
             <p>Enter a summoner name to see their level and top champions!</p>
-
-            <!-- Lookup message container for success/error messages -->
             <div id="lookup-message" class="lookup-message" style="display: none;"></div>
 
             <div class="lookup-form-container">
-                <!-- Summoner lookup form -->
                 <div class="form-group">
                     <label for="summoner-name">Summoner Name</label>
                     <input type="text" id="summoner-name" name="summoner-name" placeholder="Enter summoner name"
@@ -105,19 +98,21 @@
                         <option value="jp1">Japan</option>
                     </select>
                 </div>
-                <!-- Lookup submit button -->
                 <button type="button" id="lookup-btn" class="lookup-submit-btn">Look Up Summoner</button>
             </div>
 
-            <!-- Results display area -->
             <div id="summoner-results" class="summoner-results" style="display: none;">
                 <h4>Summoner Info</h4>
                 <div id="summoner-info"></div>
                 <div id="champion-mastery"></div>
             </div>
         </section>
-        <!-- END LEAGUE DATA LOOKUP SECTION -->
 
+        <!-- PLATFORM FEATURES SECTION -->
+        <section id="features-container">
+            <h3>Platform Features</h3>
+            <p>Loading features...</p>
+        </section>
 
     </main>
 
@@ -125,12 +120,9 @@
         <p>&copy; 2025 Vani. Built with ❤️ on AWS</p>
     </footer>
 
-    <!-- Contact form JavaScript -->
     <script src="script.js"></script>
-
     <script>
-        // League Data Lookup - Calls Riot API via Lambda
-        const RIOT_API_URL = 'https://vya4g4hw76nlodxeacr347z55a0jxmuh.lambda-url.eu-north-1.on.aws/'; // Replace with your Function URL
+        const RIOT_API_URL = 'https://vya4g4hw76nlodxeacr347z55a0jxmuh.lambda-url.eu-north-1.on.aws/';
 
         document.addEventListener('DOMContentLoaded', function () {
             const lookupBtn = document.getElementById('lookup-btn');
@@ -148,7 +140,6 @@
                     return;
                 }
 
-                // Show loading state
                 lookupBtn.textContent = 'Looking up...';
                 lookupBtn.disabled = true;
                 messageDiv.style.display = 'none';
@@ -157,90 +148,8 @@
                 try {
                     const response = await fetch(RIOT_API_URL, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            summonerName: summonerName,
-                            region: region
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ summonerName, region })
                     });
 
                     const data = await response.json();
-
-                    if (response.ok) {
-                        displaySummonerData(data);
-                        showMessage('Summoner found!', 'success');
-                    } else {
-                        showMessage(data.error || 'Failed to fetch summoner data', 'error');
-                    }
-                } catch (error) {
-                    showMessage('Network error. Please try again.', 'error');
-                }
-
-                // Reset button
-                lookupBtn.textContent = 'Look Up Summoner';
-                lookupBtn.disabled = false;
-            });
-
-            // Enter key support
-            summonerNameInput.addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') {
-                    lookupBtn.click();
-                }
-            });
-        });
-
-        function displaySummonerData(data) {
-            const resultsDiv = document.getElementById('summoner-results');
-            const summonerInfo = document.getElementById('summoner-info');
-            const championMastery = document.getElementById('champion-mastery');
-
-            // Display summoner info
-            summonerInfo.innerHTML = `
-            <div class="summoner-card">
-                <h5>${data.summoner.name}</h5>
-                <p>Level: ${data.summoner.level}</p>
-            </div>
-        `;
-
-            // Display top champions
-            if (data.topChampions && data.topChampions.length > 0) {
-                const championsHtml = data.topChampions.map(champ => `
-                <div class="champion-card">
-                    <p><strong>Champion ID:</strong> ${champ.championId}</p>
-                    <p><strong>Mastery Level:</strong> ${champ.championLevel}</p>
-                    <p><strong>Mastery Points:</strong> ${champ.championPoints.toLocaleString()}</p>
-                </div>
-            `).join('');
-
-                championMastery.innerHTML = `
-                <h5>Top Champions</h5>
-                <div class="champions-grid">
-                    ${championsHtml}
-                </div>
-            `;
-            } else {
-                championMastery.innerHTML = '<p>No champion mastery data found.</p>';
-            }
-
-            resultsDiv.style.display = 'block';
-        }
-
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('lookup-message');
-            messageDiv.textContent = text;
-            messageDiv.className = `lookup-message ${type}`;
-            messageDiv.style.display = 'block';
-
-            // Auto-hide after 10 seconds
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 10000);
-        }
-    </script>
-
-
-</body>
-
-</html>
